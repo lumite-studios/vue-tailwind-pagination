@@ -79,7 +79,6 @@
 		{
 			return {
 				classes: 'border border-gray-300 border-l-0 font-bold px-2 py-1 text-center text-xs tracking-widest uppercase first:border-l',
-				selectedPage: 1,
 			}
 		},
 
@@ -177,7 +176,6 @@
 			switchPage(page)
 			{
 				this.$emit('input', page)
-				this.selected = page
 				this.clickHandler(page)
 			}
 		}
