@@ -205,7 +205,7 @@
 			{
 				if(this.updateUrl)
 				{
-					this.$router.push({ query: { page: page }})
+					this.$router.replace({ query: { page: page } }).catch(() => {})
 				}
 				this.$emit('input', page)
 				this.clickHandler(page)
