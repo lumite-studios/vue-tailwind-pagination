@@ -30,9 +30,9 @@
 
 		<button :class="[
 				classes,
-				{ 'bg-gray-300': value === pagesTotal },
+				{ 'bg-gray-300': value === total },
 			]"
-			:disabled="value === pagesTotal"
+			:disabled="value === total"
 			@click="nextPage()"
 		>
 			<slot name="next">Next</slot>
@@ -57,15 +57,28 @@
 				default: () => {}
 			},
 
+			itemsPerPage:
+			{
+				type: Number,
+				default: 10,
+			},
+
 			pageRange:
 			{
 				type: Number,
 				default: 1
 			},
 
-			pagesTotal:
+			totalItems:
 			{
-				type: Number
+				type: Number,
+				default: 0,
+			},
+
+			updateUrl:
+			{
+				type: Boolean,
+				default: true
 			},
 
 			value:
@@ -82,6 +95,11 @@
 			}
 		},
 
+		mounted()
+		{
+			this.switchPage(this.value)
+		},
+
 		computed:
 		{
 			/**
@@ -95,9 +113,9 @@
 				const range = this.pageRange
 				let items = []
 
-				if(this.pagesTotal <= 4)
+				if(this.total <= 4)
 				{
-					for(let index = 0; index < this.pagesTotal; index++)
+					for(let index = 0; index < this.total; index++)
 					{
 						items.push({ page: index + 1 })
 					}
@@ -115,12 +133,12 @@
 						items.push({ page: '...' })
 					}
 
-					else if(page === this.pagesTotal)
+					else if(page === this.total)
 					{
 						items.push({ page: '...' })
 
-						const maxmin = this.pagesTotal - range
-						for(let index = maxmin; index < this.pagesTotal; index++)
+						const maxmin = this.total - range
+						for(let index = maxmin; index < this.total; index++)
 						{
 							items.push({ page: index })
 						}
@@ -143,21 +161,31 @@
 
 						items.push({ page: page })
 
-						if(max < this.pagesTotal)
+						if(max < this.total)
 						{
 							items.push({ page: max })
 
-							if(max + 1 !== this.pagesTotal)
+							if(max + 1 !== this.total)
 							{
 								items.push({ page: '...' })
 							}
 						}
 					}
 
-					items.push({ page: this.pagesTotal })
+					items.push({ page: this.total })
 				}
 
 				return items
+			},
+
+			/**
+			 * The total number of pages.
+			 *
+			 * @return void
+			 */
+			total()
+			{
+				return Math.ceil(this.totalItems / this.itemsPerPage)
 			}
 		},
 
@@ -175,6 +203,10 @@
 
 			switchPage(page)
 			{
+				if(this.updateUrl)
+				{
+					this.$router.push({ query: { page: page }})
+				}
 				this.$emit('input', page)
 				this.clickHandler(page)
 			}
